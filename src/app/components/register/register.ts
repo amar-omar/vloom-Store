@@ -32,6 +32,7 @@ async onRegister() {
     const { data, error } = await supabase.auth.signUp({
       email: email!,
       password: password!,
+      options: { data: { full_name: this.register.value.name ?? '' } },
     });
 
     if (error) {
