@@ -18,6 +18,7 @@ export class Orders {
   customerName = '';
   customerPhone = '';
   customerAddress = '';
+  isSubmitting = false;
 
   // متغيرات الـ Toast الاحترافي
   showToast = false;
@@ -55,47 +56,27 @@ export class Orders {
 async submitCheckout(event: Event) {
     event.preventDefault();
     const currentOrders = this.ordersList();
-    const totalAmount = currentOrders.reduce((sum, item) => sum + item.total_price, 0);
-
-    let summaryMessage = `NEW CUSTOMER ORDER!\n\n`;
-    summaryMessage += `Customer: ${this.customerName}\n`;
-    summaryMessage += `Phone: ${this.customerPhone}\n`;
-    summaryMessage += `Address: ${this.customerAddress}\n\n`;
-    summaryMessage += `-------------------\n`;
-    summaryMessage += `Products:\n`;
-    
-    currentOrders.forEach((item, index) => {
-      summaryMessage += `${index + 1}. ${item.name} (Size: ${item.size || 'L'}, Qty: ${item.quantity}) - ${item.total_price} EGP\n`;
-    });
-    
-    summaryMessage += `-------------------\n`;
-    summaryMessage += `TOTAL AMOUNT: ${totalAmount} EGP`;
-
-    const BOT_TOKEN = '8940482021:AAHNinchdue_UiCGfTOFFA7kYLYGjkSE3CE';
-    const CHAT_ID = '6409815410';
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-
-    // 1. قفل الفورمة وتفريغ البيانات فوراً لإعطاء استجابة سريعة للـ UX
-    this.isCheckoutOpen = false;
-    const tempName = this.customerName;
-    this.customerName = '';
-    this.customerPhone = '';
-    this.customerAddress = '';
-
-    // 2. إظهار الـ Toast الاحترافي فوراً
-    this.triggerToast('Order placed successfully and sent to Telegram! 🎉');
-
+    if (currentOrders.length === 0) {
+      this.triggerToast('Your orders list is empty.');
+      return;
+    }
+    this.isSubmitting = true;
     try {
-      await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: CHAT_ID,
-          text: summaryMessage
-        })
-      });
-    } catch (err) {
-      console.error('Telegram API error:', err);
+      const order = await this.cartService.placeOrder(
+        this.customerName.trim(),
+        this.customerPhone.trim(),
+        this.customerAddress.trim(),
+        currentOrders,
+      );
+      this.isCheckoutOpen = false;
+      this.customerName = '';
+      this.customerPhone = '';
+      this.customerAddress = '';
+      this.triggerToast(`Order ${order.order_number} placed successfully.`);
+    } catch (error) {
+      this.triggerToast(error instanceof Error ? error.message : 'Could not place the order.');
+    } finally {
+      this.isSubmitting = false;
     }
   }
 
