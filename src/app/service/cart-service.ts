@@ -43,6 +43,7 @@ async addOrder(product: any) {
     } else {
       const newOrder = {
         id: 'VL-' + Math.floor(1000 + Math.random() * 9000) + '-X',
+        product_id: product.id,
         name: product.name,
         price: product.price,
         size: productSize, // إضافة المقاس
@@ -59,34 +60,38 @@ async addOrder(product: any) {
     }
   }
 
-  // دالة إرسال التليجرام
-  async sendOrderToTelegram(order: any) {
-    const BOT_TOKEN = '8940482021:AAHNinchdue_UiCGfTOFFA7kYLYGjkSE3CE';
-    const CHAT_ID = '6409815410';
+  async placeOrder(
+    customerName: string,
+    customerPhone: string,
+    shippingAddress: string,
+    items: any[],
+  ) {
+    const { data, error } = await supabase.functions.invoke<{ order: { order_number: string } }>(
+      'store-checkout',
+      {
+        body: {
+          customerName,
+          customerPhone,
+          shippingAddress,
+          items: items.map((item) => ({
+            productId: item.product_id ?? null,
+            name: item.name,
+            quantity: item.quantity,
+            size: item.size,
+          })),
+        },
+      },
+    );
+    if (error) throw new Error(error.message);
+    if (!data?.order) throw new Error('Checkout did not return an order.');
 
-    const message = `🚨 *طلب جديد من متجر Vloom!*\n\n` +
-                    `📦 *المنتج:* ${order.name}\n` +
-                    `🔢 *الكمية:* ${order.quantity}\n` +
-                    `💰 *الإجمالي:* ${order.total_price} EGP\n` +
-                    `🔖 *رقم الطلب:* ${order.id}\n` +
-                    `🚚 *رقم التتبع:* ${order.tracking}`;
-
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-
-    try {
-      await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: CHAT_ID,
-          text: message,
-          parse_mode: 'Markdown'
-        })
-      });
-      console.log('Telegram notification sent successfully!');
-    } catch (err) {
-      console.error('Failed to send Telegram message:', err);
-    }
+    const cleanupResults = await Promise.all(
+      items.map((item) => supabase.from('orders').delete().eq('id', item.id)),
+    );
+    const cleanupError = cleanupResults.find((result) => result.error)?.error;
+    if (cleanupError) console.error('Order placed but cart cleanup failed:', cleanupError.message);
+    await this.fetchOrders();
+    return data.order;
   }
 
   // 3. تحديث الكمية (Update Quantity)
