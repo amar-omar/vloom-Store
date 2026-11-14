@@ -134,9 +134,9 @@
                     class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
               Cancel
             </button>
-            <button type="submit"
+            <button type="submit" [disabled]="isSubmitting"
                     class="bg-black hover:bg-gray-800 text-white px-6 py-2 rounded-xl text-xs font-semibold cursor-pointer">
-              Confirm & Send 🚀
+              {{ isSubmitting ? 'Placing order...' : 'Place order' }}
             </button>
           </div>
         </form>
