@@ -1,100 +1,29 @@
-<section>
+<section class="w-full overflow-hidden bg-white pb-20 relative">
+  
   <!-- Hero Image -->
-  <div>
+  <div class="w-full relative overflow-hidden bg-gray-900 animate-fadeIn">
     <img
-      class="h-[250px] sm:h-[400px] md:h-[600px] lg:h-[750px] w-full object-cover"
-      src="/assets/images/background-img.png"
-      alt=""
+      class="h-[280px] sm:h-[420px] md:h-[550px] lg:h-[680px] w-full object-cover opacity-90 hover:scale-105 transition-transform duration-1000 ease-out"
+      src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600&auto=format&fit=crop"
+      alt="Vloom Hero Collection"
+      loading="eager"
     />
   </div>
 
-  <!-- Header -->
-  <div class="w-full mx-auto px-4 md:px-6 lg:px-12">
-    <h1 class="font-bold mt-10 sm:mt-14 md:mt-20 text-2xl sm:text-4xl md:text-5xl">CURATED</h1>
-
-    <div class="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
-      <p class="text-xs sm:text-sm md:text-base text-center sm:text-left">
+  <!-- Header Section -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16 animate-slideUp">
+    <h1 class="font-black text-3xl sm:text-4xl md:text-5xl tracking-tight uppercase text-black">CURATED</h1>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-4 pb-6 border-b border-gray-200">
+      <p class="text-xs sm:text-sm md:text-base tracking-widest text-gray-600 font-medium">
         SELECT GARMENTS FOR THE MODERN BRUTALIST
       </p>
-
-      <a
-        class="flex items-center gap-2 text-xs sm:text-sm font-bold border-b pb-1 hover:opacity-70 transition"
-        routerLink="/"
-      >
+      <a class="flex items-center gap-2 text-xs sm:text-sm font-bold border-b-2 border-black pb-1 hover:opacity-70 transition-opacity cursor-pointer group" routerLink="/main/product">
         VIEW ALL CATEGORIES
-        <span><i class="fa-solid fa-arrow-right"></i></span>
+        <span class="group-hover:translate-x-1 transition-transform duration-300"><i class="fa-solid fa-arrow-right"></i></span>
       </a>
     </div>
   </div>
 
-  <!-- Products Grid -->
-  <div class="w-full px-2 sm:px-4 md:px-12 mt-8">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-      <!-- Item -->
-      <div>
-        <a href="">
-          <img
-            src="/assets/images/t-shirt.jpg"
-            alt="T-Shirt"
-            class="h-[280px] sm:h-[350px] md:h-[420px] lg:h-[500px] w-full object-cover rounded-xl sm:items-center hover:opacity-90 hover:shadow-2xl transition"
-          />
-        </a>
-        <h4 class="text-center mt-3 font-serif text-lg sm:text-xl md:text-2xl">T-Shirt</h4>
-      </div>
+  <app-product></app-product>
 
-      <!-- Item -->
-      <div>
-        <a href="">
-          <img
-            src="/assets/images/t-shirt-baskota.jpg"
-            alt="t-shirt-baskota"
-            class="h-[280px] sm:h-[350px] md:h-[420px] lg:h-[500px] w-full object-cover rounded-xl hover:opacity-90 hover:shadow-2xl transition"
-          />
-        </a>
-        <h4 class="text-center mt-3 font-serif text-lg sm:text-xl md:text-2xl">Baskota T-Shirt</h4>
-      </div>
-
-      <!-- Item -->
-      <div>
-        <a href="">
-          <img
-            src="/assets/images/t-shirt-oversize.jpg"
-            alt="overSize"
-            class="h-[280px] sm:h-[350px] md:h-[420px] lg:h-[500px] w-full object-cover rounded-xl hover:opacity-90 hover:shadow-2xl transition"
-          />
-        </a>
-        <h4 class="text-center mt-3 font-serif text-lg sm:text-xl md:text-2xl">Oversize T-Shirt</h4>
-      </div>
-    </div>
-  </div>
-  <div class="bg-gray-100 w-full mt-12 px-2 sm:px-4 md:px-12 py-18">
-    <div class="">
-      <h1 class="font-serif text-5xl items-center mx-auto text-center">NEW DROPS</h1>
-    </div>
-    <div
-      class="md-3 gap-4 mt-8 justify-between items-center mx sm:px-4 md:px-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:gap-6"
-    >
-      <div class="">
-        <img src="/assets/images/dark.jpg" alt="Dark T-Shirt" />
-        <h2 class="my-2 font-serif text-xl">Dark T-Shirt</h2>
-        <p>54.00 EG</p>
-      </div>
-      <div class="">
-        <img src="/assets/images/dark.jpg" alt="Dark T-Shirt" />
-        <h2 class="my-2 font-serif text-xl">Dark T-Shirt</h2>
-        <p>54.00 EG</p>
-      </div>
-      <div class="">
-        <img src="/assets/images/dark.jpg" alt="Dark T-Shirt" />
-        <h2 class="my-2 font-serif text-xl">Dark T-Shirt</h2>
-        <p>54.00 EG</p>
-      </div>
-      <div class="">
-        <img src="/assets/images/dark.jpg" alt="Dark T-Shirt" />
-        <h2 class="my-2 font-serif text-xl">Dark T-Shirt</h2>
-        <p>54.00 EG</p>
-      </div>
-    </div>
-  </div>
 </section>
-

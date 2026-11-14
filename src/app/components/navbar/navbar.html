@@ -1,36 +1,84 @@
-<nav class="justify-between flex bg-gray-300 text-black w-full ">
-      <div class="text-3xl font-bold m-4 items-center">
-    <a routerLink="/">VLOOM</a>
-  </div>
-  <div class="text-xl font-extralight m-4 items-center">
-    <ul class="flex gap-4">
-      <li>
-        <a routerLink="home" class="active">COLLECTIONS</a>
-      </li>
-      <li>
-        <a routerLink="product">SHOP</a>
-      </li>
-      <li>
-        <a routerLink="cart">CART</a>
-      </li>
-      <li>
-        <a routerLink="orders">ORDERS</a>
-      </li>
-    </ul>
+<nav class="bg-gray-300 text-black w-full shadow-md sticky top-0 z-50 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
+    
+    <!-- 1. اللوجو -->
+    <div class="text-2xl sm:text-3xl font-black tracking-wider">
+      <a routerLink="main/home" class="hover:opacity-80 transition no-underline text-black">Vrooomm</a>
+    </div>
+
+    <!-- 2. اللينكات الرئيسية (تظهر في الشاشات الكبيرة lg فقط) -->
+    <div class="hidden lg:flex text-base font-light items-center">
+      <ul class="flex gap-6">
+        <li>
+          <a routerLink="home" routerLinkActive="font-bold underline" class="transition hover:text-gray-600">COLLECTIONS</a>
+        </li>
+        <li>
+          <a routerLink="product" routerLinkActive="font-bold underline" class="transition hover:text-gray-600">SHOP</a>
+        </li>
+        <li>
+          <a routerLink="cart" routerLinkActive="font-bold underline" class="transition hover:text-gray-600">CART</a>
+        </li>
+        <li>
+          <a routerLink="/main/orders" routerLinkActive="font-bold underline" class="transition hover:text-gray-600">ORDERS</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 3. الأيقونات وأزرار الدخول (تظهر في الشاشات الكبيرة lg فقط) -->
+    <div class="hidden lg:flex items-center gap-3">
+      <!-- <button mat-icon-button aria-label="Wishlist" routerLink="/wishlist" class="hover:scale-110 transition-transform">
+        <mat-icon>favorite</mat-icon>
+      </button> -->
+
+      <button mat-icon-button aria-label="Shopping Cart" routerLink="/main/orders" class="hover:scale-110 transition-transform">
+        <mat-icon>shopping_cart</mat-icon>
+      </button>
+
+      <button mat-stroked-button routerLink="/auth/login" class="transition hover:bg-black hover:text-white px-4">
+        Sign In
+      </button>
+
+      <button mat-flat-button color="primary" routerLink="/auth/register" class="transition shadow-sm px-4">
+        Sign Up
+      </button>
+    </div>
+
+    <!-- 4. زر القائمة للموبايل والـ Tablets (يظهر لحد شاشات lg وتختفي بعدها) -->
+    <div class="flex lg:hidden items-center gap-4 text-xl">
+      <button (click)="isMenuOpen = !isMenuOpen" class="focus:outline-none p-2 rounded-lg active:scale-95 transition" aria-label="Toggle Menu">
+        <i class="fa-solid" [ngClass]="isMenuOpen ? 'fa-xmark text-2xl' : 'fa-bars text-xl'"></i>
+      </button>
+    </div>
+
   </div>
 
-  <div>
-    <ul class="flex gap-4 m-4 items-center text-2xl">
-      <li>
-        <a routerLink="login"><i class="fa-brands fa-searchengin"></i></a>
-      </li>
-      <li>
-        <a routerLink="login"><i class="fa-brands fa-shopify"></i></a>
-      </li>
-      <li>
-        <a routerLink="login"><i class="fa-regular fa-user"></i></a>
-      </li>
-    </ul>
-  </div>
-  
+  <!-- القائمة المنسدلة للموبايل والـ Tablets (تظهر فقط عند الضغط على زر الهامبرجر) -->
+  @if (isMenuOpen) {
+    <div class="lg:hidden bg-gray-200 border-t border-gray-300 px-6 py-6 flex flex-col gap-6 shadow-xl animate-fadeIn">
+      <ul class="flex flex-col gap-4 text-lg font-medium">
+        <li>
+          <a (click)="isMenuOpen = false" routerLink="home" class="block hover:translate-x-2 transition-transform">COLLECTIONS</a>
+        </li>
+        <li>
+          <a (click)="isMenuOpen = false" routerLink="product" class="block hover:translate-x-2 transition-transform">SHOP</a>
+        </li>
+        <li>
+          <a (click)="isMenuOpen = false" routerLink="cart" class="block hover:translate-x-2 transition-transform">CART</a>
+        </li>
+        <li>
+          <a (click)="isMenuOpen = false" routerLink="orders" class="block hover:translate-x-2 transition-transform">ORDERS</a>
+        </li>
+      </ul>
+
+      <!-- أزرار الدخول والتسجيل للقائمة الجانبية -->
+      <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-300">
+        <button mat-stroked-button routerLink="/auth/login" (click)="isMenuOpen = false" class="w-full py-2">
+          Sign In
+        </button>
+        <button mat-flat-button color="primary" routerLink="/auth/register" (click)="isMenuOpen = false" class="w-full py-2">
+          Sign Up
+        </button>
+      </div>
+    </div>
+  }
 </nav>

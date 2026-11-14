@@ -1,1 +1,46 @@
-<p>login works!</p>
+<div class="flex min-h-screen flex-col items-center justify-center px-3 sm:px-6 py-6">
+  <!-- Address -->
+  <h1 class="text-3xl sm:text-5xl font-bold tracking-tight mb-4 text-center">SIGN IN</h1>
+
+  <!-- Form -->
+  <form class="w-full max-w-[500px] px-2">
+
+    <!--   Email -->
+    <div class="mb-5 flex flex-col gap-1.5">
+      <label for="email" class="font-bold text-xs sm:text-sm text-gray-800">Your Email</label>
+      <input id="email" type="email"
+        class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black transition"
+        placeholder="Enter Your Email" />
+    </div>
+
+    <!--   Password -->
+    <div class="mb-6 flex flex-col gap-1.5">
+      <div class="flex items-center justify-between gap-2">
+        <label for="password" class="font-bold text-xs sm:text-sm text-gray-800">Your password</label>
+      </div>
+      <input id="password" type="password"
+        class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black transition"
+        placeholder="Enter Your Password" />
+      <a
+        class="cursor-pointer text-[11px] sm:text-xs text-gray-600 hover:text-black underline transition whitespace-nowrap">Forget
+        Password ?</a>
+
+    </div>
+ 
+
+    <!--   Login Button  -->
+    <button type="submit"
+      class="w-full bg-black text-white py-3.5 rounded-lg font-bold text-sm sm:text-base cursor-pointer transition hover:bg-gray-800 shadow-sm">
+      SIGN IN
+    </button>
+
+    <!-- Don't have an account? -->
+    <div class="text-center mt-4">
+      <a class="block w-full bg-gray-100 hover:bg-gray-200 text-black py-3 rounded-lg font-bold text-xs sm:text-sm cursor-pointer transition border border-gray-200"
+        href="/auth/register">
+        Don't have an account? <span class="underline">CREATE ONE</span>
+      </a>
+    </div>
+
+  </form>
+</div>
