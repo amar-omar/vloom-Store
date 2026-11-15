@@ -2,11 +2,10 @@ import { Component, OnInit, computed, input, signal, inject } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { supabase } from '../../service/supabase'; 
 import { CartService } from '../../service/cart-service';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-product',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './product.html',
   styleUrl: './product.css',
 })
@@ -14,64 +13,67 @@ export class Product implements OnInit {
   private cartService = inject(CartService);
   
   category = input<string>('all');
-  showToast = false;
-  toastMessage = '';
+  showToast = signal(false);
+  toastMessage = signal('');
+  toastIsError = signal(false);
   
   // قائمة المقاسات المتاحة
   availableSizes = ['M', 'L', 'XL', 'XXL'];
 
   products = signal<any[]>([]);
-  isLoading = true;
+  isLoading = signal(true);
+  loadError = signal('');
 
   async ngOnInit() {
     await this.fetchProductsFromSupabase();
   }
 
   async fetchProductsFromSupabase() {
+    this.isLoading.set(true);
+    this.loadError.set('');
     try {
       const { data, error } = await supabase.from('products').select('*');
-      if (error) {
-        console.error('Error fetching products:', error.message);
-      } else {
-        const formattedProducts = (data || []).map(item => {
-          let imagesList: string[] = [];
-          const rawUrl = item.image_url;
-
-          if (Array.isArray(rawUrl)) {
-            imagesList = rawUrl;
-          } else if (typeof rawUrl === 'string' && rawUrl.trim() !== '') {
-            let cleanStr = rawUrl.trim();
-            if (cleanStr.startsWith('[') && cleanStr.endsWith(']')) {
-              cleanStr = cleanStr.slice(1, -1);
-            }
-            imagesList = cleanStr
-              .split(',')
-              .map(url => url.replace(/["']/g, '').trim())
-              .filter(url => url.length > 0);
-          }
-
-          if (imagesList.length === 0) {
-            imagesList = ['https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=800&auto=format&fit=crop'];
-          }
-
-          return {
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            images: imagesList,
-            activeImageIndex: 0,
-            category: item.category || 'General',
-            description: item.description,
-            selectedSize: 'L' // المقاس الافتراضي
-          };
-        });
-        this.products.set(formattedProducts);
-      }
+      if (error) throw error;
+      const formattedProducts = (data || []).map(item => {
+        const price = item.price === null ? NaN : Number(item.price);
+        return {
+          id: item.id,
+          name: item.name,
+          price: Number.isFinite(price) && price >= 0 ? price : null,
+          images: this.productImages(item.image_url),
+          activeImageIndex: 0,
+          category: item.category || 'General',
+          description: item.description,
+          selectedSize: 'L'
+        };
+      });
+      this.products.set(formattedProducts);
     } catch (err) {
-      console.error('Unexpected error:', err);
+      console.error('Error fetching products:', err);
+      this.loadError.set('Could not load products. Please try again.');
     } finally {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
+  }
+
+  private productImages(value: unknown): string[] {
+    let images: unknown = value;
+    if (typeof images === 'string') {
+      const text = images.trim();
+      if (text.startsWith('[')) {
+        try {
+          images = JSON.parse(text);
+        } catch {
+          images = text.replace(/^\[|\]$/g, '').split(/,\s*(?=https?:\/\/|\/|assets\/)/i);
+        }
+      } else {
+        images = text.split(/,\s*(?=https?:\/\/|\/|assets\/)/i);
+      }
+    }
+    const urls = Array.isArray(images)
+      ? images.filter((url): url is string => typeof url === 'string').map((url) => url.trim().replace(/^["']|["']$/g, '').trim()).filter(Boolean)
+      : [];
+    return urls.length ? urls : ['https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=800&auto=format&fit=crop'];
   }
 
   // اختيار المقاس للمنتج
@@ -99,14 +101,19 @@ export class Product implements OnInit {
     )
   );
 
-  addToCart(product: any) {
-    this.cartService.addOrder(product);
-
-    this.toastMessage = `Added "${product.name}" (Size: ${product.selectedSize}) to your orders!`;
-    this.showToast = true;
+  async addToCart(product: any) {
+    try {
+      await this.cartService.addOrder(product);
+      this.toastIsError.set(false);
+      this.toastMessage.set(`Added "${product.name}" (Size: ${product.selectedSize}) to your cart.`);
+    } catch (error) {
+      this.toastIsError.set(true);
+      this.toastMessage.set(error instanceof Error ? error.message : 'Could not add this product.');
+    }
+    this.showToast.set(true);
 
     setTimeout(() => {
-      this.showToast = false;
+      this.showToast.set(false);
     }, 2000);
   }
 }
