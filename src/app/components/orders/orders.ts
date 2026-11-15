@@ -1,92 +1,52 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { CartService } from '../../service/cart-service';
 
 @Component({
   selector: 'app-orders',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './orders.html',
   styleUrl: './orders.css',
 })
-export class Orders {
-  cartService = inject(CartService);
-  ordersList = this.cartService.orders;
+export class Orders implements OnInit {
+  private readonly cartService = inject(CartService);
+  readonly ordersList = this.cartService.history;
+  loading = signal(false);
+  trackingOrder = signal(false);
+  orderNumber = '';
+  trackingCode = '';
+  errorMessage = signal('');
 
-  // متغيرات الفورم المنبثقة
-  isCheckoutOpen = false;
-  customerName = '';
-  customerPhone = '';
-  customerAddress = '';
-  isSubmitting = false;
-
-  // متغيرات الـ Toast الاحترافي
-  showToast = false;
-  toastMessage = '';
-
-  increaseQty(order: any) {
-    this.cartService.updateQuantity(order.id, order.quantity, 1, order.price);
+  ngOnInit(): void {
+    void this.refreshOrders();
   }
 
-  decreaseQty(order: any) {
-    this.cartService.updateQuantity(order.id, order.quantity, -1, order.price);
-  }
-
-  removeOrder(orderId: string) {
-    if (confirm('Are you sure you want to delete this order?')) {
-      this.cartService.deleteOrder(orderId);
-    }
-  }
-
-  changeStatus(orderId: string, status: string) {
-    this.cartService.updateOrderStatus(orderId, status);
-  }
-
-  // فتح نافذة الفورم عند الضغط على Checkout
-  checkoutAllOrders() {
-    const currentOrders = this.ordersList();
-    if (currentOrders.length === 0) {
-      this.triggerToast('Your orders list is empty!');
-      return;
-    }
-    this.isCheckoutOpen = true;
-  }
-
-  // إرسال بيانات العميل والطلبات لتليجرام
-async submitCheckout(event: Event) {
-    event.preventDefault();
-    const currentOrders = this.ordersList();
-    if (currentOrders.length === 0) {
-      this.triggerToast('Your orders list is empty.');
-      return;
-    }
-    this.isSubmitting = true;
+  async refreshOrders(): Promise<void> {
+    this.loading.set(true);
+    this.errorMessage.set('');
     try {
-      const order = await this.cartService.placeOrder(
-        this.customerName.trim(),
-        this.customerPhone.trim(),
-        this.customerAddress.trim(),
-        currentOrders,
-      );
-      this.isCheckoutOpen = false;
-      this.customerName = '';
-      this.customerPhone = '';
-      this.customerAddress = '';
-      this.triggerToast(`Order ${order.order_number} placed successfully.`);
+      await this.cartService.refreshOrderHistory();
     } catch (error) {
-      this.triggerToast(error instanceof Error ? error.message : 'Could not place the order.');
+      this.errorMessage.set(error instanceof Error ? error.message : 'Could not refresh orders.');
     } finally {
-      this.isSubmitting = false;
+      this.loading.set(false);
     }
   }
 
-  // دالة تشغيل الـ Toast وإخفائه تلقائياً بعد 3 ثواني
-// دالة تشغيل الـ Toast وإخفائه تلقائياً بعد 3 ثواني
-  triggerToast(message: string) {
-    this.toastMessage = message;
-    this.showToast = true;
-    setTimeout(() => {
-      this.showToast = false;
-    }, 3000);
+  async findOrder(): Promise<void> {
+    if (this.trackingOrder()) return;
+    this.trackingOrder.set(true);
+    this.errorMessage.set('');
+    try {
+      await this.cartService.trackOrder(this.orderNumber.toUpperCase(), this.trackingCode.toUpperCase());
+      this.orderNumber = '';
+      this.trackingCode = '';
+    } catch (error) {
+      this.errorMessage.set(error instanceof Error ? error.message : 'Could not find the order.');
+    } finally {
+      this.trackingOrder.set(false);
+    }
   }
 }
