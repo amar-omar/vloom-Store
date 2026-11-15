@@ -2,6 +2,8 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
 
+The storefront and the sibling Vloom Admin application use the same Supabase project. Apply the migrations in `vloom-Admin/supabase/migrations` before using checkout or the product category editor. See the admin README for setup and optional Edge Functions. Carts and guest order receipts are saved in the browser; signed-in customers can also retrieve their own orders on other devices.
+
 ## Development server
 
 To start a local development server, run:
