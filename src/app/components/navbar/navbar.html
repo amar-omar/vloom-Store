@@ -3,20 +3,20 @@
     
     <!-- 1. اللوجو -->
     <div class="text-2xl sm:text-3xl font-black tracking-wider">
-      <a routerLink="main/home" class="hover:opacity-80 transition no-underline text-black">Vrooomm</a>
+      <a routerLink="/main/home" class="hover:opacity-80 transition no-underline text-black">Vrooomm</a>
     </div>
 
     <!-- 2. اللينكات الرئيسية (تظهر في الشاشات الكبيرة lg فقط) -->
     <div class="hidden lg:flex text-base font-light items-center">
       <ul class="flex gap-6">
         <li>
-          <a routerLink="home" routerLinkActive="font-bold underline" class="transition hover:text-gray-600">COLLECTIONS</a>
+          <a routerLink="/main/home" routerLinkActive="font-bold underline" class="transition hover:text-gray-600">COLLECTIONS</a>
         </li>
         <li>
-          <a routerLink="product" routerLinkActive="font-bold underline" class="transition hover:text-gray-600">SHOP</a>
+          <a routerLink="/main/product" routerLinkActive="font-bold underline" class="transition hover:text-gray-600">SHOP</a>
         </li>
         <li>
-          <a routerLink="cart" routerLinkActive="font-bold underline" class="transition hover:text-gray-600">CART</a>
+          <a routerLink="/main/cart" routerLinkActive="font-bold underline" class="transition hover:text-gray-600">CART</a>
         </li>
         <li>
           <a routerLink="/main/orders" routerLinkActive="font-bold underline" class="transition hover:text-gray-600">ORDERS</a>
@@ -30,17 +30,16 @@
         <mat-icon>favorite</mat-icon>
       </button> -->
 
-      <button mat-icon-button aria-label="Shopping Cart" routerLink="/main/orders" class="hover:scale-110 transition-transform">
+      <button mat-icon-button aria-label="Shopping Cart" routerLink="/main/cart" class="hover:scale-110 transition-transform">
         <mat-icon>shopping_cart</mat-icon>
       </button>
 
-      <button mat-stroked-button routerLink="/auth/login" class="transition hover:bg-black hover:text-white px-4">
-        Sign In
-      </button>
-
-      <button mat-flat-button color="primary" routerLink="/auth/register" class="transition shadow-sm px-4">
-        Sign Up
-      </button>
+      @if (currentUser()) {
+        <button mat-stroked-button (click)="signOut()" class="transition hover:bg-black hover:text-white px-4">Sign Out</button>
+      } @else {
+        <button mat-stroked-button routerLink="/auth/login" class="transition hover:bg-black hover:text-white px-4">Sign In</button>
+        <button mat-flat-button color="primary" routerLink="/auth/register" class="transition shadow-sm px-4">Sign Up</button>
+      }
     </div>
 
     <!-- 4. زر القائمة للموبايل والـ Tablets (يظهر لحد شاشات lg وتختفي بعدها) -->
@@ -57,28 +56,29 @@
     <div class="lg:hidden bg-gray-200 border-t border-gray-300 px-6 py-6 flex flex-col gap-6 shadow-xl animate-fadeIn">
       <ul class="flex flex-col gap-4 text-lg font-medium">
         <li>
-          <a (click)="isMenuOpen = false" routerLink="home" class="block hover:translate-x-2 transition-transform">COLLECTIONS</a>
+          <a (click)="isMenuOpen = false" routerLink="/main/home" class="block hover:translate-x-2 transition-transform">COLLECTIONS</a>
         </li>
         <li>
-          <a (click)="isMenuOpen = false" routerLink="product" class="block hover:translate-x-2 transition-transform">SHOP</a>
+          <a (click)="isMenuOpen = false" routerLink="/main/product" class="block hover:translate-x-2 transition-transform">SHOP</a>
         </li>
         <li>
-          <a (click)="isMenuOpen = false" routerLink="cart" class="block hover:translate-x-2 transition-transform">CART</a>
+          <a (click)="isMenuOpen = false" routerLink="/main/cart" class="block hover:translate-x-2 transition-transform">CART</a>
         </li>
         <li>
-          <a (click)="isMenuOpen = false" routerLink="orders" class="block hover:translate-x-2 transition-transform">ORDERS</a>
+          <a (click)="isMenuOpen = false" routerLink="/main/orders" class="block hover:translate-x-2 transition-transform">ORDERS</a>
         </li>
       </ul>
 
       <!-- أزرار الدخول والتسجيل للقائمة الجانبية -->
       <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-300">
-        <button mat-stroked-button routerLink="/auth/login" (click)="isMenuOpen = false" class="w-full py-2">
-          Sign In
-        </button>
-        <button mat-flat-button color="primary" routerLink="/auth/register" (click)="isMenuOpen = false" class="w-full py-2">
-          Sign Up
-        </button>
+        @if (currentUser()) {
+          <button mat-stroked-button (click)="signOut()" class="w-full py-2">Sign Out</button>
+        } @else {
+          <button mat-stroked-button routerLink="/auth/login" (click)="isMenuOpen = false" class="w-full py-2">Sign In</button>
+          <button mat-flat-button color="primary" routerLink="/auth/register" (click)="isMenuOpen = false" class="w-full py-2">Sign Up</button>
+        }
       </div>
     </div>
   }
+  @if (authError()) { <p class="bg-red-50 px-4 py-2 text-sm text-red-700" role="alert">{{ authError() }}</p> }
 </nav>
